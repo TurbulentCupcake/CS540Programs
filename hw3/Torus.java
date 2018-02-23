@@ -128,6 +128,8 @@ class State {
 		// TO DO: print a torus State based on option (flag)
 		if(option == 1) {
 			System.out.println(this.getBoard());
+		} else if(option == 2) {
+			System.out.println(this.getBoard());
 		}
 
 		
@@ -158,6 +160,7 @@ class State {
 	}
 
 
+
 }
 
 public class Torus {
@@ -182,25 +185,99 @@ public class Torus {
 			}
 		} else {
 			State init = new State(board);
+			State goalState = new State(new int[]{1,2,3,4,5,6,7,8,0});
 			Stack<State> stack = new Stack<>();
-			List<State> prefix = new ArrayList<>();
+			List<State> prefix = new ArrayList<State>();
 			int goalChecked = 0;
 			int maxStackSize = Integer.MIN_VALUE;
+			int depth = 0;
 
-			// needed for Part E
-			while (true) {				
+			if(option == 2) {
+				// this option implements depth-limited dfs
 				stack.push(init);
-				while (!stack.isEmpty()) {
-					//TO DO: perform iterative deepening; implement prefix list
+				while(!stack.isEmpty()) {
+						
+						// pop out the current state
+						State current = stack.pop();
+
+						// check for goal
+						if(current.equals(goalState)) {
+							System.out.println("Goal Reached!");
+							System.exit(0);
+						} else { 
+							current.printState(option);
+						}
+
+
+						// check if its parent is present in the
+						// prefix. If it is the first element, then
+						// add it to the prefix list.
+						if(current.parentPt == null || prefix.size() == 0) {
+							prefix.add(current);
+						} else {
+							// iterate through the prefix list and find the parent
+							// of the current state
+							for(int i = 0 ; i < prefix.size() ; i++) {
+
+								if(prefix.get(i).equals(current.parentPt)) {
+
+									// once found, remove everyone from i+1 to end of the list
+									prefix.subList(i + 1, prefix.size()).clear();
+
+									// add the popped element into the prefix list
+									prefix.add(current);
+								}
+							}
+
+						}
+
+						// generate all successive states for the current depth
+						State[] successors = current.getSuccessors();
+						
+						// iterate through all the successors and check if they are present
+						// in the prefix list, if not, add them to the stack, else skip
+						for(State successor : successors) {
+
+							boolean pflag = false;
+							// check if the state exists in the prefix
+							for( State pre : prefix ) {
+
+								if(pre.equals(successor)) {
+									pflag = true;
+									break;
+								} 
+
+							}
+
+							// if it does not exist, then push into stack
+							if(!pflag && successor.depth <= cutoff) {
+
+								stack.push(successor);
+							}
+
+						}
+
 					
 				}
-				
-				if (option != 5)
-					break;
-				
-				//TO DO: perform the necessary steps to start a new iteration
-			        //       for Part E
 
+
+			} else {
+
+				// needed for Part E
+				while (true) {				
+					stack.push(init);
+					while (!stack.isEmpty()) {
+						//TO DO: perform iterative deepening; implement prefix list
+						
+					}
+					
+					if (option != 5)
+						break;
+					
+					//TO DO: perform the necessary steps to start a new iteration
+				        //       for Part E
+
+				}
 			}
 		}
 	}

@@ -136,7 +136,9 @@ class State {
 			} else {
 				System.out.println(this.getBoard() + " parent " + this.parentPt.getBoard());
 			}
-		}	
+		} else if(option == 4) {
+			System.out.println(this.getBoard());
+		}
 
 		
 	}
@@ -196,9 +198,9 @@ public class Torus {
 			List<State> prefix = new ArrayList<State>();
 			int goalChecked = 0;
 			int maxStackSize = Integer.MIN_VALUE;
-			int depth = 0;
+			int depth = cutoff;
 
-			if(option == 2 || option == 3) {
+			if(option == 2 || option == 3 || option == 4) {
 				// this option implements depth-limited dfs
 				stack.push(init);
 				while(!stack.isEmpty()) {
@@ -210,7 +212,7 @@ public class Torus {
 						if(current.equals(goalState)) {
 							System.out.println("Goal Reached!");
 							System.exit(0);
-						} else { 
+						} else if(option == 2 ||  option == 3) { 
 							current.printState(option);
 						}
 
@@ -235,6 +237,20 @@ public class Torus {
 								}
 							}
 
+						}
+
+						// this is kinda iffy, but im guessing that since the topmost element 
+						// in the stack will be goal checked first, it will be the first one
+						// with a unique depth number. So that would be the newest guy in the
+						// prefix list. If we increment the depth value everytime we notice 
+						// that particular depth once, we wouldn't see the other states
+						// with the same depth value.
+						if(current.depth == depth) {
+							// iterate through the list and print the elements
+							for(State pre : prefix) {
+								pre.printState(option);
+							}
+							depth++;
 						}
 
 						// generate all successive states for the current depth

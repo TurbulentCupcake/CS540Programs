@@ -171,7 +171,28 @@ class State {
 
 }
 
+
+
+
+
 public class Torus {
+
+	// seperate function to deal with when you hit the goal
+	public static void hitGoal(State goalState, int goalChecked, List<State> prefix, Stack<State> stack) {
+
+		for(State pre : prefix) {
+			pre.printState(1);
+		}
+		goalState.printState(1);
+		System.out.println("Goal-check " + goalChecked);
+		int stack_size = 0;
+		while(!stack.empty()) { 
+			stack_size++;
+		}
+		System.out.println("Max-stack-size " + stack_size);
+		System.exit(0);
+	
+	}
 
 	public static void main(String args[]) {
 		if (args.length < 10) {
@@ -198,109 +219,129 @@ public class Torus {
 			List<State> prefix = new ArrayList<State>();
 			int goalChecked = 0;
 			int maxStackSize = Integer.MIN_VALUE;
-			int depth = cutoff;
 
-			if(option == 2 || option == 3 || option == 4) {
+			if(option == 2 || option == 3 || option == 4 || option == 5) {
+
 				// this option implements depth-limited dfs
-				stack.push(init);
-				while(!stack.isEmpty()) {
-						
-						// pop out the current state
-						State current = stack.pop();
-
-						// check for goal
-						if(current.equals(goalState)) {
-							System.out.println("Goal Reached!");
-							System.exit(0);
-						} else if(option == 2 ||  option == 3) { 
-							current.printState(option);
-						}
-
-
-						// check if its parent is present in the
-						// prefix. If it is the first element, then
-						// add it to the prefix list.
-						if(current.parentPt == null || prefix.size() == 0) {
-							prefix.add(current);
-						} else {
-							// iterate through the prefix list and find the parent
-							// of the current state
-							for(int i = 0 ; i < prefix.size() ; i++) {
-
-								if(prefix.get(i).equals(current.parentPt)) {
-
-									// once found, remove everyone from i+1 to end of the list
-									prefix.subList(i + 1, prefix.size()).clear();
-
-									// add the popped element into the prefix list
-									prefix.add(current);
-								}
-							}
-
-						}
-
-						// this is kinda iffy, but im guessing that since the topmost element 
-						// in the stack will be goal checked first, it will be the first one
-						// with a unique depth number. So that would be the newest guy in the
-						// prefix list. If we increment the depth value everytime we notice 
-						// that particular depth once, we wouldn't see the other states
-						// with the same depth value.
-						if(current.depth == depth) {
-							// iterate through the list and print the elements
-							for(State pre : prefix) {
-								pre.printState(option);
-							}
-							depth++;
-						}
-
-						// generate all successive states for the current depth
-						State[] successors = current.getSuccessors();
-						
-						// iterate through all the successors and check if they are present
-						// in the prefix list, if not, add them to the stack, else skip
-						for(State successor : successors) {
-
-							boolean pflag = false;
-							// check if the state exists in the prefix
-							for( State pre : prefix ) {
-
-								if(pre.equals(successor)) {
-									pflag = true;
-									break;
-								} 
-
-							}
-
-							// if it does not exist, then push into stack
-							if(!pflag && successor.depth <= cutoff) {
-
-								stack.push(successor);
-							}
-
-						}
-
-					
+				int depth;
+				if(option == 4) {
+					depth = cutoff;
+				} else {
+					depth = 0;
 				}
 
+				while(true) {
 
-			} else {
-
-				// needed for Part E
-				while (true) {				
 					stack.push(init);
-					while (!stack.isEmpty()) {
-						//TO DO: perform iterative deepening; implement prefix list
+
+					// refresh prefix for each new iteration of iterative deepening
+					if(option == 5) {
+						prefix = new ArrayList<State>();
+						stack = new Stack<State>();
+						stack.push(init);
+						System.out.println("depth = " + depth);
+					}
+
+					while(!stack.isEmpty()) {
+							
+							// pop out the current state
+							State current = stack.pop();
+
+							// check for goal
+							if(current.isGoalState()) {
+								// go to hit goal
+								hitGoal(current,goalChecked,prefix,stack);
+
+							} else { 
+								goalChecked++;
+							}
+
+
+							if(option == 2 ||  option == 3) { 
+								current.printState(option);
+							}
+
+
+							// check if its parent is present in the
+							// prefix. If it is the first element, then
+							// add it to the prefix list.
+							if(current.parentPt == null || prefix.size() == 0) {
+								prefix.add(current);
+							} else {
+								// iterate through the prefix list and find the parent
+								// of the current state
+								for(int i = 0 ; i < prefix.size() ; i++) {
+
+									if(prefix.get(i).equals(current.parentPt)) {
+
+										// once found, remove everyone from i+1 to end of the list
+										prefix.subList(i + 1, prefix.size()).clear();
+
+										// add the popped element into the prefix list
+										prefix.add(current);
+									}
+								}
+
+							}
+
+							// this is kinda iffy, but im guessing that since the topmost element 
+							// in the stack will be goal checked first, it will be the first one
+							// with a unique depth number. So that would be the newest guy in the
+							// prefix list. If we increment the depth value everytime we notice 
+							// that particular depth once, we wouldn't see the other states
+							// with the same depth value.
+							if(current.depth == depth && option == 4) {
+								// iterate through the list and print the elements
+								for(State pre : prefix) {
+									pre.printState(option);
+								}
+								depth++;
+							}
+
+							// generate all successive states for the current depth
+							State[] successors = current.getSuccessors();
+							
+							// iterate through all the successors and check if they are present
+							// in the prefix list, if not, add them to the stack, else skip
+							// THIS WAY IS SUPER CHILDISH PROBZ CHANGE IT UP
+							for(State successor : successors) {
+
+								boolean pflag = false;
+								// check if the state exists in the prefix
+								for( State pre : prefix ) {
+
+									if(pre.equals(successor)) {
+										pflag = true;
+										break;
+									} 
+
+								}
+
+								// if it does not exist, then push into stack
+								if(!pflag && successor.depth <= cutoff) {
+
+									stack.push(successor);
+								}
+
+							}
+
 						
 					}
-					
-					if (option != 5)
+
+					// any option other than iterative deepening will have to
+					// run until the stack is empty
+					if(option != 5) {
 						break;
-					
-					//TO DO: perform the necessary steps to start a new iteration
-				        //       for Part E
+					} else if(option == 5) {
+						// if you're using iterative deepening, increase depth. 
+						depth++;
+					}
+
 
 				}
-			}
+
+
+			} 
 		}
 	}
 }

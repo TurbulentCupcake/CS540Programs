@@ -130,7 +130,13 @@ class State {
 			System.out.println(this.getBoard());
 		} else if(option == 2) {
 			System.out.println(this.getBoard());
-		}
+		} else if(option == 3) {
+			if(this.parentPt == null) {
+				System.out.println(this.getBoard() + " parent 0 0 0 0 0 0 0 0 0 ");
+			} else {
+				System.out.println(this.getBoard() + " parent " + this.parentPt.getBoard());
+			}
+		}	
 
 		
 	}
@@ -192,7 +198,7 @@ public class Torus {
 			int maxStackSize = Integer.MIN_VALUE;
 			int depth = 0;
 
-			if(option == 2) {
+			if(option == 2 || option == 3) {
 				// this option implements depth-limited dfs
 				stack.push(init);
 				while(!stack.isEmpty()) {

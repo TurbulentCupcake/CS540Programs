@@ -178,18 +178,14 @@ class State {
 public class Torus {
 
 	// seperate function to deal with when you hit the goal
-	public static void hitGoal(State goalState, int goalChecked, List<State> prefix, Stack<State> stack) {
+	public static void hitGoal(State goalState, int goalChecked, List<State> prefix, int maxStackSize) {
 
 		for(State pre : prefix) {
 			pre.printState(1);
 		}
 		goalState.printState(1);
 		System.out.println("Goal-check " + goalChecked);
-		int stack_size = 0;
-		while(!stack.empty()) { 
-			stack_size++;
-		}
-		System.out.println("Max-stack-size " + stack_size);
+		System.out.println("Max-stack-size " + maxStackSize);
 		System.exit(0);
 	
 	}
@@ -239,7 +235,8 @@ public class Torus {
 						prefix = new ArrayList<State>();
 						stack = new Stack<State>();
 						stack.push(init);
-						System.out.println("depth = " + depth);
+						/*System.out.println("depth = " + depth);
+						*/
 					}
 
 					while(!stack.isEmpty()) {
@@ -247,14 +244,14 @@ public class Torus {
 							// pop out the current state
 							State current = stack.pop();
 
+
 							// check for goal
+							goalChecked++;
 							if(current.isGoalState()) {
 								// go to hit goal
-								hitGoal(current,goalChecked,prefix,stack);
+								hitGoal(current,goalChecked,prefix,maxStackSize);
 
-							} else { 
-								goalChecked++;
-							}
+							} 
 
 
 							if(option == 2 ||  option == 3) { 
@@ -300,6 +297,14 @@ public class Torus {
 
 							// generate all successive states for the current depth
 							State[] successors = current.getSuccessors();
+
+							// for iterative deepening, the cutoff is calculated
+							// iteratively.
+
+							if(option == 5) {
+								cutoff = depth;
+							}
+
 							
 							// iterate through all the successors and check if they are present
 							// in the prefix list, if not, add them to the stack, else skip
@@ -323,6 +328,10 @@ public class Torus {
 									stack.push(successor);
 								}
 
+							}
+
+							if(stack.size() > maxStackSize) {
+								maxStackSize = stack.size();
 							}
 
 						

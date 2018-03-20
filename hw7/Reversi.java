@@ -27,582 +27,353 @@ class State {
 	}
 
 	public boolean isTerminal() {
-
-		// TO DO: determine if the board is a terminal node or not and return boolean
-		// use get successors in the place of iterating through the entire board and then looking for empty space
-		/*
-		 * check if there are any 0s
-		 * if not return true
-		 * if yes return false
-		 * and check if the two players have any valid moves
-		 * if not return true*/
 		if(this.getSuccessors('1').length == 0 && this.getSuccessors('2').length == 0)
 			return true;
-
-		//Else the baord is not a terminal node
-		return false;
-
-	}
-	public boolean isOpponent(char currPlayer, char check) {
-		//System.out.println("player and board " + currPlayer +" "+ check );
-		if(currPlayer=='1' && check=='2') {
-			return true;
-		} else if(currPlayer=='2' && check=='1') {
-			return true;
-		}
 		return false;
 	}
-	public boolean isinit(char check) {
+	public boolean initStateCheck(char check) {
 		if(check=='0') {
 			return true;
 		}
 		return false;
 	}
-	public boolean isBoundVertical(int give) {
-		if(give<0 || give>=16) {
+	public boolean verticalBoundCheck(int i) {
+		if(i<0 || i>=16) {
 			return false;
 		}
 		return true;
 	}
-	public boolean isBoundHor(int give, int row) {
-		if(give<0 || give>=16) {
+	public boolean horizBoundCheck(int i, int row) {
+		if(i<0 || i>=16) {
 			return false;
 		}
-		if(give<row*4) {
+		if(i<row*4) {
 			return false;
 		}
-		if(give>=(row+1)*4) {
+		if(i>=(row+1)*4) {
 			return false;
 		}
 		return true;
 	}
-//**************************************************************************
-//                  BOUND CODE
-//**************************************************************************
-public boolean isBoundHorR (int i){
-    	
-    	if(i+1 != 4 && i+1 !=8 && i+1 !=12 && i+1 !=16){
+	public boolean opponentCheck(char player, char check) {
+		if(player=='1' && check=='2') {
+			return true;
+		} else if(player=='2' && check=='1') {
+			return true;
+		}
+		return false;
+	}	
+	
+	public boolean leftCheck (int i){
+    	if(i-1 != -1 && i-1 !=3 && i-1 !=7 && i-1 !=11)
     		return true;
-    	}
-    	else
-    		return false;
-    	
+      	return false;
+	}
+ 
+    public boolean upCheck(int i){
+      	if(i-4 >= 0)
+      		return true;
+      	return false;
     }
-    
-    
-public boolean isBoundHorL (int i){
-    	
-    	if(i-1 != -1 && i-1 !=3 && i-1 !=7 && i-1 !=11){
-    		return true;
-    	}
-    	else
-    		return false;
-    	
-    }
-    
-    public boolean isBoundVerticalD(int i){
-    	
+  
+
+    public boolean downCheck(int i){  	
     	if(i+4 <= 15)
-    		return true;
-    	else 
-    		return false;
-    	
+    		return true; 
+    	return false;
     }
     
-  public boolean isBoundVerticalU(int i){
-    	
-    	if(i-4 >= 0)
-    		return true;
-    	else 
-    		return false;
-    	
-    }
+	public boolean rightCheck (int i){
+	    	if(i+1 != 4 && i+1 !=8 && i+1 !=12 && i+1 !=16)
+	    		return true;
+	    	return false;
+		}
   
-  
-  
-  public boolean downRightBound(int i){
-	  
-	  if(isBoundHorR(i) && isBoundVerticalD(i)){
+  	public boolean lowerRightCheck(int i){
+	  if(rightCheck(i) && downCheck(i))
 		  return true;
-	  }
-	  
 	  return false;
-	  }
-  
-  
-  public boolean upperLeftBound(int i){
-	  
-	  if(isBoundHorL(i) && isBoundVerticalU(i)){
-		  return true;
-	  }
-	  
-	  return false;
-	  }
-	  
-  
-public boolean downLeftBound(int i){
-	  
-	  if(isBoundHorL(i) && isBoundVerticalD(i)){
-		  return true;
-	  }
-	  
-	  return false;
-	  }
-  
-public boolean upperRightBound(int i){
-	  
-	  if(isBoundHorR(i) && isBoundVerticalU(i)){
-		  return true;
-	  }
-	  
-	  return false;
-	  }
-//**************************************************************************
-//                  BOUND CODE
-//**************************************************************************
-	/*public State legalMove(char player, char[] board, int legalPos, int give) {
-    	State result = new State(board);
-    	for(int i =0; i< board.length; i++) {
-    		if(i==legalPos) {
-    			board[i] = player;
-    			boolean reach = true;
-    			int j=0;
-    			while(reach) {
-    				if(give==1) {
-    					if(isBoundHor(i+j, i/4) && board[i+j]!=player && board[i+j]!=0) {
-    						board[i+j]=player;
-    					}else if(isBoundHor(i+j, i/4) && board[i+j]==0) {
-    						reach = false;
-    					}
-    				}else if(give ==2) {
-
-    					if(isBoundVertical(i+j) && board[i+j]!=player && board[i+j]!=0) {
-    						board[i+j]=player;
-    					}else if(isBoundHor(i+j, i/4) && board[i+j]==0) {
-    						reach = false;
-    					}
-
-    				}
-    			}
-    		}
-    	}
-    	return result;
-    }*/
-	public State legalMove(char player, char [] board, int legalPos, int give) {
-		State result = new State(board);
-		int j=0;
-
-		return result;
-
 	}
-	public State[] getSuccessors(char player) {
-
-		// TO DO: get all successors and return them in proper order
-		//first detect all the legal moves
-		//for the specified symbol in the arg
-
-		//basically three steps are to be followed for this function
-		//#1 find the legal moves
-		//#2 place the given symbol in all the legal positions
-		//#3 after placing the symbols in their respective legal positions we have
-		// to flip the 2s(is if the given symbol is 2) contigious col or row or diagonal
-		//and then return the state
-
-		//define legal moves here:
-		//we can only place the 1 row wise or coloumn wise or diagnal wise adjacent 2 which is beside a 1 only along which the 1 
-		// we place is valid with 2
-
-
-		//horizontally next element is i+1
-		//vertically next element is i+4
-		//diagonally next element is (i+4) +1; that is go vertical and one horizontal
-		//three if statements in the for loop
-		// one if there is an immediate horizontal opposite elem. 
-		// one of there is an immediate vertical opposite elem.
-		// vice versa for diagonal elem as well
-
-		// now inside one of these if statements 
-		// the if statements themselves give information to check for the next horzontal or vertical or diagonal elem.
-		// if diagonal for example then check if the next diagonal elem to this diag elem is same as the symbol we would 
-		//like to place.
-		
+  
+  
+  	public boolean upperLeftCheck(int i){
+	  if(leftCheck(i) && upCheck(i))
+		  return true;
+	  return false;
+	}
+	  
+  
+	public boolean lowerLeftCheck(int i){
+	  if(leftCheck(i) && downCheck(i))
+		  return true;
+	  return false;
+	}
+  
+	public boolean upperRightCheck(int i){
+	  if(rightCheck(i) && upCheck(i))
+		  return true;
+	  return false;
+	}
+	
+	public State[] getSuccessors(char player) {				
 		ArrayList<State> successorsList = new ArrayList<State>();
 
-		//System.out.println(this.getBoard());
-		
-		for(int i =0; i< this.board.length; i++) {
-			boolean anySuccessors = false;
-			char [] temp = new char[16];
-			//System.out.println("**************************************************************");
-			//System.out.println("for loop starts itr# " + i + "the value of player here --> " + player);
-	//		System.out.println("**************************************************************");
-			System.arraycopy(this.board,0, temp, 0, this.board.length);
+		for(int i=0; i<this.board.length; i++) {
+			boolean successors_present = false;
+			char[] new_array = new char[16];
+			
+			System.arraycopy(this.board,0, new_array, 0, this.board.length);
 
-			//right horizontal pos
-		
-
-			if( isinit(this.board[i]) && isBoundHorR(i) && isBoundHorR(i+1) && isOpponent(player,this.board[i+1])) {
-				//System.out.println("sample check1!");
-				//check next horizontal
-				//System.out.println("Entered right Horizontal condition ");
+			if( initStateCheck(this.board[i]) && rightCheck(i) && rightCheck(i+1)
+			 && opponentCheck(player,this.board[i+1])) {
 				int j=i+2;
-				int count=0;
-				int counter=0;
-				//System.out.println(isBoundHor(j,i/4));
-				while(isBoundHorR(j-1) && count==0 && counter==0) {
-					//System.out.println(board[j]);
+				int myCount=0;
+				int freeCount=0;
+				while(rightCheck(j-1) && myCount==0 && freeCount==0) {
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					++j;
 				}
 				j=i+1;
-				if(count>0) {
-				//	System.out.println("A part of a legal state exists Horizontal RIGHT");
-					anySuccessors = true;
-					//temp[i]=player;
-					while(isBoundHorR(j) && board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {
+					successors_present = true;
+					while(rightCheck(j) && board[j]!='0') {
+						new_array[j]=player;
 						++j;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}System.out.println();
-				//System.out.println("###############################################################");
 				}
 			}
-			//left horizontal pos
-			
-
-			if(isinit(this.board[i]) && isBoundHorL(i) && isBoundHorL(i-1) && isOpponent(player,this.board[i-1])) {
-				//System.out.println("Entered left Horizontal condition ");
-				//check next horizontal
+			if(initStateCheck(this.board[i]) && leftCheck(i) && leftCheck(i-1) 
+				&& opponentCheck(player,this.board[i-1])) {
 				int j=i-2;
-				int count=0;
-				int counter =0;
-				while(isBoundHorL(j+1) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount =0;
+				while(leftCheck(j+1) && myCount==0 && freeCount==0) {
 					if(i==13){
-				//		System.out.print("board -->" + this.board[j] + " at j--> " + j);				
-					}
-					//System.out.println();
-					if(this.board[j]==player) {
-						++count;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
-					--j;
-					//if(i==13)
-					//System.out.println("count: " +count);
+					if(this.board[j]==player) {
+						++myCount;
+					}
+					j=j-1;
 				}
 				j=i-1;
-				if(count>0) {
-				//	System.out.println("A part of a legal state exists Horizontal LEFT");
-					//temp[i]=player;
-					anySuccessors = true;
-					while(isBoundHorL(j) && this.board[j]!='0') {
-						temp[j]=player;
-						--j;
+				if(myCount>0) {
+					successors_present = true;
+					while(leftCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
+						j=j-1;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}System.out.println();
-				//	System.out.println("###############################################################");
 				}
 			}
-			//vertical below opponent check
-			if(isinit(this.board[i]) && isBoundVerticalD(i) && isOpponent(player,board[i+4])) {
-				//next vertical below
-				//System.out.println("Entered below vertical condition ");
+			if(initStateCheck(this.board[i]) && downCheck(i)
+			 && opponentCheck(player,board[i+4])) {
 				int j=i+8;
-				int count=0;
-				int counter=0;
-				while(isBoundVerticalD(j-4) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount=0;
+				while(downCheck(j-4) && myCount==0 && freeCount==0) {
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j = j+4;
 				}
 				j=i+4;
-				if(count>0) {
-				//	System.out.println("A part of a legal state exists vertical BELOW");
-					//temp[i]=player;
-					anySuccessors = true;
-					while(isBoundVerticalD(j) && this.board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {
+					successors_present = true;
+					while(downCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
 						j = j+4;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}
-				//	System.out.println();
-				//	System.out.println("###############################################################");
 
 				}
 			}
-			//vertical above
-			if(i==12){
-				//System.out.println("player at 12 is " + player);			
-			}
-			/*if(i==13){
-				System.out.println(isOpponent(player, this.board[i-4]));
-				System.out.println("value --> " + this.board[i-4]);
-				System.out.println("player value here " + player);			
-			}*/
-			if(isinit(this.board[i]) && isBoundVerticalU(i) && isOpponent(player,this.board[i-4])) {
-				//next vertical above
-				//System.out.println("Entered above vertical condition ");
+	
+
+			if(initStateCheck(this.board[i]) && 
+				upCheck(i) && opponentCheck(player,this.board[i-4])) {
 				int j=i-8;
-				int count=0;
-				int counter =0;
-				while(isBoundVerticalU(j+4) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount =0;
+				while(upCheck(j+4) && myCount==0 && freeCount==0) {
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j=j-4;
 				}
 				j=i-4;
-				if(count>0) {
-					//System.out.println("A part of a legal state exists vertical ABOVE");
-
-					//temp[i]=player;
-					anySuccessors = true;
-					while(isBoundVerticalU(j) && this.board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {
+					successors_present = true;
+					while(upCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
 						j=j-4;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}System.out.println();
-				//	System.out.println("###############################################################");
 
 				}
 			}
-			//diagonal lower right opponent check
 			
 
-			if(isinit(this.board[i]) && downRightBound(i) && isOpponent(player,board[(i+4)+1])) {
+			if(initStateCheck(this.board[i]) && lowerRightCheck(i) 
+				&& opponentCheck(player,board[(i+4)+1])) {
 
-				//System.out.println("Entered lower diagonal right condition ");
 				int j=i+10;
-				int count=0;
-				int counter=0;
-				//doubt j-5 ^^^^^^^^^^^^
-				while(downRightBound(j-5) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount=0;
+				while(lowerRightCheck(j-5) && myCount==0 && freeCount==0) {
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j=j+5;
 				}
 				j=i+5;
-				if(count>0) {
-					//temp[i]=player;
-				//	System.out.println("A part of a legal state exists lower diagonal right");
-					anySuccessors = true;
-					while(downRightBound(j) && this.board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {
+					successors_present = true;
+					while(lowerRightCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
 						j=j+5;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}System.out.println();
-				//	System.out.println("###############################################################");
 
 				}
 			}
-			//diag lower left
-		
+			if(initStateCheck(this.board[i]) && lowerLeftCheck(i)
+			 && opponentCheck(player,this.board[(i+4)-1])) {
 
-			if(isinit(this.board[i]) && downLeftBound(i) && isOpponent(player,this.board[(i+4)-1])) {
-
-				//System.out.println("Entered lower diagonal left condition ");
 				int j=i+6;
-				int count=0;
-				int counter=0;
-				while(downLeftBound(j-3) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount=0;
+				while(lowerLeftCheck(j-3) && myCount==0 && freeCount==0) {
 
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j=j+3;
 				}
 				j=i+3;
-				if(count>0) {
+				if(myCount>0) {
 
-					//temp[i]=player;
-				//	System.out.println("A part of a legal state exists lower diagonal left");
-					anySuccessors = true;
-					while(downLeftBound(j) && this.board[j]!='0') {
-						temp[j]=player;
+					successors_present = true;
+					while(lowerLeftCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
 						j=j+3;
 					}
-				//	System.out.println("resulting temp array ");
-				//	for(int h =0; h< temp.length; h++) {
-				//		System.out.print(temp[h]);
-				//	}System.out.println();
-				//	System.out.println("###############################################################");
 
 				}
 			}
-			//upper left
-		
-
-			if(isinit(this.board[i]) && upperLeftBound(i) &&
-					isOpponent(player,this.board[(i-4)-1])) {
-				//next upper left
-				//System.out.println("Entered upper left diagonal condition ");
+			if(initStateCheck(this.board[i]) && upperLeftCheck(i) &&
+					opponentCheck(player,this.board[(i-4)-1])) {
 				int j=i-10;
-				int count=0;
-				int counter =0;
-				while(upperLeftBound(j+5) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount =0;
+				while(upperLeftCheck(j+5) && myCount==0 && freeCount==0) {
 					if(this.board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j=j-5;
 				}
 				j=i-5;
-				if(count>0) {
-					//System.out.println("A part of a legal state exists upper left diagonal");
-					//temp[i]=player;
-					anySuccessors = true;
-					while(upperLeftBound(j) && board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {
+					successors_present = true;
+					while(upperLeftCheck(j) && board[j]!='0') {
+						new_array[j]=player;
 						j=j-5;
 					}
-					/*System.out.println("resulting temp array ");
-					for(int h =0; h< temp.length; h++) {
-						System.out.print(temp[h]);
-					}System.out.println();*/
-				//System.out.println("###############################################################");
-
 				}
 			}
-			//upper right
-			
-
-			if(isinit(this.board[i]) && upperRightBound(i) && isOpponent(player,board[i-3])) {
-				//System.out.println("Entered upper right diagonal condition ");
+			if(initStateCheck(this.board[i]) && 
+				upperRightCheck(i) && opponentCheck(player,board[i-3])) {
 				int j=i-6;
-				int count=0;
-				int counter=0;
-				while(upperRightBound(j+3) && count==0 && counter==0) {
+				int myCount=0;
+				int freeCount=0;
+				while(upperRightCheck(j+3) && myCount==0 && freeCount==0) {
 					if(board[j]==player) {
-						++count;
+						++myCount;
 					}
 					if(this.board[j]=='0'){
-						++counter;
+						++freeCount;
 					}
 					j=j-3;
 				}
 				j=i-3;
-				if(count>0) {
-
-					//temp[i]=player;
-				//	System.out.println("A part of a legal state exists upper right diagonal");
-					anySuccessors = true;
-					while(upperRightBound(j) && this.board[j]!='0') {
-						temp[j]=player;
+				if(myCount>0) {		
+					successors_present = true;
+					while(upperRightCheck(j) && this.board[j]!='0') {
+						new_array[j]=player;
 						j=j-3;
 					}
-					//System.out.println("resulting temp array ");
-					/*for(int h =0; h< temp.length; h++) {
-						System.out.print(temp[h]);
-					}*/
-					//System.out.println("###############################################################");
-
-
 				}
 			}
-			
-			if(anySuccessors){
-				//System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-				temp[i]= player;
-				State newSuc = new State(temp);
+			if(successors_present){
+				new_array[i]=player;
+				State newSuc = new State(new_array);
 				successorsList.add(newSuc);
-				//System.out.println(newSuc.getBoard());
-				//System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 			}
-			
 		}
-		State[] successors = new State[successorsList.size()];
-		
-			
+		State[] successors = new State[successorsList.size()];			
 		for(int i =0; i< successorsList.size(); i++) {
 			successors[i] = successorsList.get(i);
-			//System.out.println(successorsList.get(i).getBoard());
 		}
-
-			
 		return successors;
 	}
 
 	public void printState(int option, char player) {
 		if(option == 1){
-			State[] currSucc = this.getSuccessors(player);
-			if(currSucc.length == 0 && !this.isTerminal()){
-				System.out.println(this.getBoard());
-			}
-			if(currSucc.length == 0 && this.isTerminal())
-				return;
-
-			if(currSucc.length != 0){
-				for(int i=0; i<currSucc.length; i++){
-					System.out.println(currSucc[i].getBoard());
+			State[] nxt = this.getSuccessors(player);
+			if(nxt.length == 0){ 
+				if(this.getSuccessors(player).length == 0 && !this.isTerminal()) {
+					System.out.println(this.getBoard());
 				}
+				if(this.isTerminal()) {
+					return;
+				}
+			}
+			if(nxt.length >= 0){
+				for(State s : nxt) 
+					System.out.println(s.getBoard());
 			}
 		}
 		if(option == 2){
-			if(this.isTerminal()){
-				System.out.println(this.getScore());
-			}
-			else{	
-				System.out.println("non-terminal");
-			}
-
+			System.out.println(isTerminal() ? this.getScore() : "non-terminal");
 		}
 		if(option == 3){
-			int utilValue =0;
-			utilValue = Minimax.run(this, player);
-			System.out.println(utilValue);
-			System.out.println(Minimax.miniMaxCnt);
+			System.out.println(Minimax.run(this, player));
+			System.out.println(Minimax.callCount);
 		}
-		if(option == 4 || option == 6){
-			if(this.isTerminal())
-				return;
-			if(this.getSuccessors(player).length == 0 && !this.isTerminal())
-				System.out.println(this.getBoard());
+
+		if(option == 6 || option == 4){
+			if(this.isTerminal()) return ;
+			if(this.getSuccessors(player).length == 0) {
+				if(!this.isTerminal())
+					System.out.println(this.getBoard());
+			}
 			if(this.getSuccessors(player).length != 0){
-				State[] currSucc = this.getSuccessors(player);				
-				System.out.println(currSucc[0].getBoard());
+				State[] allnextstates = this.getSuccessors(player);
+				State best_state = allnextstates[0]; //selecting the first successor
+				System.out.println(best_state.getBoard());
 			}
 		}
 		if(option == 5){
-			int utilValue = Minimax.run_with_pruning(this, player);
-			System.out.println(utilValue);
-			System.out.println(Minimax.alphaBetaCnt);
+			System.out.println(Minimax.run_with_pruning(this, player));
+			System.out.println(Minimax.callCount);
 		}
 	}
 
@@ -624,132 +395,72 @@ public boolean upperRightBound(int i){
 }
 
 class Minimax {
-	static int miniMaxCnt = 0;
-	static int alphaBetaCnt = 0;
-	static State permState = null;
+	static int callCount = 0;
+
 	private static int max_value(State curr_state) {
-		++miniMaxCnt;
-		State temp = null; 
-		int max = Integer.MIN_VALUE, sameVal = Integer.MIN_VALUE;
+		callCount++;
+		int max = Integer.MIN_VALUE;
 		if(curr_state.isTerminal()){
 			return curr_state.getScore();
-		}
-		else{	
-			State successors [] = curr_state.getSuccessors('1');
-			
-			if(successors.length > 0){
-				for(int i=0 ; i<successors.length ; i++){
-					max = Math.max(max, min_value(successors[i]));
-					if( max > sameVal){
-						sameVal = max;
-						 temp = successors[i];
-					}
-				}
-				permState = temp;
-				return max;
-			}
-			else{
-				int min =  min_value(curr_state);
-				if(min > sameVal){
-					temp = curr_state;
-				}
-				 permState = temp;
-				 return min;
-			}
+		} else if(curr_state.getSuccessors('1').length > 0) {	
+			State[] next_states = curr_state.getSuccessors('1');
+			for(State next_state : next_states) 
+				max = Math.max(max, min_value(next_state));
+			return max;
+		} else {
+			max = min_value(curr_state);
+			return max;
 		}
 	}
 
 	private static int min_value(State curr_state) {
-		++miniMaxCnt;
-		int b = Integer.MAX_VALUE;
-		int copy = b;
-		State obj = null;
-     
-		
-		if(curr_state.isTerminal())
-		{
+ 		callCount++;
+		int min = Integer.MAX_VALUE;
+		if(curr_state.isTerminal()){
 			return curr_state.getScore();
-		}
-		else
-		{
-			
-			State successors [] = curr_state.getSuccessors('2');
-			
-			if(successors.length > 0)
-			{
-			
-				for(int i=0 ; i<successors.length ; i++)
-				{
-					State type = successors[i];
-					b = Math.min(b, max_value(type));
-					
-					if(b < copy)
-					{
-						copy = b;
-						obj = type;
-					}
-				}
-				
-				temp = obj;
-				return b;
-			}
-			else
-			{
-				int value =  max_value(curr_state);
-				if(value < copy)
-				{
-					obj = curr_state;
-				}
-				
-				temp = obj;
-				return value;
-				
-			}
-			
+		} else if(curr_state.getSuccessors('2').length > 0) {
+			State[] next_states = curr_state.getSuccessors('2');
+			for(State next_state : next_states)
+				min = Math.min(min, max_value(next_state));
+			return min;
+		} else {
+			min = max_value(curr_state);
+			return min;
 		}
 		
 	}
 
 	private static int max_value_with_pruning(State curr_state, int alpha, int beta) {
-		++alphaBetaCnt;
+		callCount++;
 		if(curr_state.isTerminal()){
 			return curr_state.getScore();
 		}
-
-		State[] currSucc = curr_state.getSuccessors('1');
-
-		
-		if(currSucc.length == 0 && curr_state.isTerminal() == false){
+		if(curr_state.getSuccessors('1').length == 0 && !curr_state.isTerminal()){
 			alpha = Math.max(alpha, min_value_with_pruning(curr_state, alpha, beta));
-		}
-
-		for(int i=0; i< currSucc.length; i++){
-			alpha = Math.max(alpha, min_value_with_pruning(currSucc[i], alpha, beta));
+		}	
+		State[] nxt = curr_state.getSuccessors('1');	
+		for(State s : nxt){
+			alpha = Math.max(alpha, min_value_with_pruning(s, alpha, beta));
 			if(alpha >= beta)
 				return beta;
 		}
-
 		return alpha;
 	}
 
 	private static int min_value_with_pruning(State curr_state, int alpha, int beta) {
-		++alphaBetaCnt;	
+		callCount++;	
 		if(curr_state.isTerminal()){
 			return curr_state.getScore();
 		}
-
-		State[] currSucc = curr_state.getSuccessors('2');
-
-		if(currSucc.length == 0 && curr_state.isTerminal() == false){
+		if(curr_state.getSuccessors('2').length == 0 && !curr_state.isTerminal()){
 			beta = Math.min(beta, max_value_with_pruning(curr_state, alpha, beta));
 		}
-
-		for(int i=0; i< currSucc.length; i++){
-			beta = Math.min(beta, max_value_with_pruning(currSucc[i], alpha, beta));
+		State[] nxt = curr_state.getSuccessors('2');
+		for(State s : nxt){
+			beta = Math.min(beta, max_value_with_pruning(s, alpha, beta));
 			if(alpha >= beta)
 				return alpha;
 		}
-
 		return beta;
 	}
 
@@ -765,7 +476,6 @@ class Minimax {
 		}
 		return value;
 	}
-
 	public static int run_with_pruning(State curr_state, char player) {
 		int alpha = Integer.MIN_VALUE;
 		int beta = Integer.MAX_VALUE;

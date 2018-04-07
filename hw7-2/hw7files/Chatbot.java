@@ -115,6 +115,20 @@ public class Chatbot{
             ArrayList<Integer> words_after_h = new ArrayList<Integer>();
             //TODO
 
+            // iterate until the second last word
+            // and add the next word into the arraylist
+            for(int i = 0 ; i < corpus.size() - 1; i++) {
+                if(corpus.get(i) == h) {
+                    words_after_h.add(corpus.get(i+1));
+                }
+            }
+            
+            // look for the words that match w
+            for(int i = 0 ; i < words_after_h.size(); i++) {
+                if(words_after_h.get(i) == w) {
+                    count++;
+                }
+            }
             //output 
             System.out.println(count);
             System.out.println(words_after_h.size());

@@ -309,6 +309,35 @@ public class Chatbot{
             if(t == 0){
                 // TODO Generate first word using r
                 double r = rng.nextDouble();
+
+                ArrayList<Double> p_i = new ArrayList<>();
+                
+                for(int i = 0 ; i < 4700 ; i++) {
+                    // make sure p_i is nonzero
+                    p_i.add(getProbability(corpus, i));
+    
+                    if(p_i.get(i) != 0) {
+                        
+                        double l_i = 0, r_i = 0;
+    
+                        if(i != 0) {
+                            for(int j = 0 ; j < i ; j++) {
+                                l_i += p_i.get(j);
+                            }
+                        } 
+    
+                        for(int j = 0; j <= i ; j++){
+                            r_i +=  p_i.get(j);
+                        }
+    
+                        if(r > l_i && r <= r_i) {
+                           h1 = i;
+                           break;
+                        }
+                                           
+                    }
+                }               
+
                 System.out.println(h1);
                 if(h1 == 9 || h1 == 10 || h1 == 12){
                     return;
@@ -316,12 +345,90 @@ public class Chatbot{
 
                 // TODO Generate second word using r
                 r = rng.nextDouble();
+
+                ArrayList<Integer> words_after_h = new ArrayList<>();
+                p_i = new ArrayList<>();
+
+                for(int i = 0 ; i < corpus.size() - 1; i++) {
+                    if(corpus.get(i) == h1) {
+                        words_after_h.add(corpus.get(i+1));
+                    }
+                }
+
+                for(int i = 0 ; i < 4700 ; i++) {
+
+                    p_i.add(getNgramProbability(corpus, words_after_h, h1, i));
+    
+                    if(p_i.get(i) != 0) {
+    
+                        double l_i = 0 , r_i = 0;
+    
+                        if(i != 0) {
+                            for(int j = 0; j < i ; j++) {
+                                l_i += p_i.get(j);
+                            } 
+                        }
+                        
+                        for(int j = 0 ; j <= i ; j++) {
+                            r_i += p_i.get(j);
+                        }
+    
+                        if(r > l_i && r <= r_i) {
+                            h2 = i;
+                            break;
+                        } else if (r == 0) {
+                           h2 = i;
+                           break;
+                        }
+                    }
+    
+                }                
+
                 System.out.println(h2);
             }
             else if(t == 1){
                 h1 = Integer.valueOf(args[3]);
                 // TODO Generate second word using r
                 double r = rng.nextDouble();
+
+                ArrayList<Integer> words_after_h = new ArrayList<>();
+                ArrayList<Double> p_i = new ArrayList<>();
+
+                for(int i = 0 ; i < corpus.size() - 1; i++) {
+                    if(corpus.get(i) == h1) {
+                        words_after_h.add(corpus.get(i+1));
+                    }
+                }
+
+                for(int i = 0 ; i < 4700 ; i++) {
+
+                    p_i.add(getNgramProbability(corpus, words_after_h, h1, i));
+    
+                    if(p_i.get(i) != 0) {
+    
+                        double l_i = 0 , r_i = 0;
+    
+                        if(i != 0) {
+                            for(int j = 0; j < i ; j++) {
+                                l_i += p_i.get(j);
+                            } 
+                        }
+                        
+                        for(int j = 0 ; j <= i ; j++) {
+                            r_i += p_i.get(j);
+                        }
+    
+                        if(r > l_i && r <= r_i) {
+                            h2 = i;
+                            break;
+                        } else if (r == 0) {
+                           h2 = i;
+                           break;
+                        }
+                    }
+    
+                }   
+
                 System.out.println(h2);
             }
             else if(t == 2){
@@ -330,9 +437,54 @@ public class Chatbot{
             }
 
             while(h2 != 9 && h2 != 10 && h2 != 12){
+
                 double r = rng.nextDouble();
                 int w  = 0;
+
+
                 // TODO Generate new word using h1,h2
+                ArrayList<Double> p_i = new ArrayList<>();
+                ArrayList<Integer> words_after_h1h2 = new ArrayList<Integer>();
+                for(int i = 0 ; i < corpus.size() - 2 ; i++) {
+                    if(corpus.get(i) == h1 && corpus.get(i+1) == h2) {
+                        words_after_h1h2.add(corpus.get(i+2));
+                    }
+                }
+
+                if(words_after_h1h2.size() == 0) {
+                    System.out.println("undefined");
+                    System.exit(0);
+                }
+
+                for(int i = 0 ; i < 4700 ; i++) {
+
+                    p_i.add(getNgramProbability(corpus, words_after_h1h2, h1, i));
+
+                    if(p_i.get(i) != 0) {
+                    
+                        //System.out.println(p_i.get(i));  
+                        double l_i = 0 , r_i = 0;
+
+                        if(i != 0) {
+                            for(int j = 0 ; j < i ; j++) {
+                                l_i += p_i.get(j);
+                            }
+                        }
+
+                        for(int j = 0 ; j <= i ; j++) {
+                            r_i += p_i.get(j);
+                        }
+
+                        if(r > l_i && r <= r_i){
+                            w = i;
+                            break;
+                        } else if (r == 0) {
+                            w = i;
+                            break;
+                        }
+                    }
+                }
+
                 System.out.println(w);
                 h1 = h2;
                 h2 = w;

@@ -42,6 +42,24 @@ public class Chatbot{
         return p;
     }
 
+    private static double getBigramProbability(ArrayList<Integer> corpus,
+                ArrayList<Integer> words_after_h,
+                int h ,
+                int w) {
+        
+        int count = 0;
+        
+        for(int i = 0 ; i < words_after_h.size() ; i++) {
+            if(words_after_h.get(i) == w) {
+                count++;
+            }
+        }
+
+        double probability = (double)count/(double)words_after_h.size();
+        return probability;
+     }
+
+    
     static public void main(String[] args){
         ArrayList<Integer> corpus = readCorpus();
 		int flag = Integer.valueOf(args[0]);
@@ -138,9 +156,53 @@ public class Chatbot{
             int n1 = Integer.valueOf(args[1]);
             int n2 = Integer.valueOf(args[2]);
             int h = Integer.valueOf(args[3]);
+            double r = (double)n1/(double)n2;
+
+            ArrayList<Integer> words_after_h = new ArrayList<>();
+            ArrayList<Double> p_i = new ArrayList<>();
             //TODO
-            
-        }
+
+            for(int i = 0 ; i < corpus.size() - 1; i++) {
+                if(corpus.get(i) == h) {
+                    words_after_h.add(corpus.get(i+1));
+                }
+            }
+
+            for(int i = 0 ; i < 4700 ; i++) {
+
+                p_i.add(getBigramProbability(corpus, words_after_h, h, i));
+
+                if(p_i.get(i) != 0) {
+
+                    double l_i = 0 , r_i = 0;
+
+                    if(i != 0) {
+                        for(int j = 0; j < i ; j++) {
+                            l_i += p_i.get(j);
+                        } 
+                    }
+                    
+                    for(int j = 0 ; j <= i ; j++) {
+                        r_i += p_i.get(j);
+                    }
+
+                    if(r > l_i && r <= r_i) {
+                        System.out.println(i);
+                        System.out.println(String.format("%.7f",l_i));
+                        System.out.println(String.format("%.7f",r_i));
+                        System.exit(0);
+                    } else if (r == 0) {
+                        System.out.println(0);
+                        System.out.println(String.format("%.7f",(double)0));
+                        System.out.println(String.format("%.7f", p_i.get(0)));
+                        System.exit(0);
+                    }
+                }
+
+            }
+
+        }            
+        
         else if(flag == 500){
             int h1 = Integer.valueOf(args[1]);
             int h2 = Integer.valueOf(args[2]);

@@ -42,7 +42,7 @@ public class Chatbot{
         return p;
     }
 
-    private static double getBigramProbability(ArrayList<Integer> corpus,
+    private static double getNgramProbability(ArrayList<Integer> corpus,
                 ArrayList<Integer> words_after_h,
                 int h ,
                 int w) {
@@ -58,6 +58,10 @@ public class Chatbot{
         double probability = (double)count/(double)words_after_h.size();
         return probability;
      }
+
+    
+
+    
 
     
     static public void main(String[] args){
@@ -170,7 +174,7 @@ public class Chatbot{
 
             for(int i = 0 ; i < 4700 ; i++) {
 
-                p_i.add(getBigramProbability(corpus, words_after_h, h, i));
+                p_i.add(getNgramProbability(corpus, words_after_h, h, i));
 
                 if(p_i.get(i) != 0) {
 
@@ -192,9 +196,9 @@ public class Chatbot{
                         System.out.println(String.format("%.7f",r_i));
                         System.exit(0);
                     } else if (r == 0) {
-                        System.out.println(0);
+                        System.out.println(i);
                         System.out.println(String.format("%.7f",(double)0));
-                        System.out.println(String.format("%.7f", p_i.get(0)));
+                        System.out.println(String.format("%.7f", r_i));
                         System.exit(0);
                     }
                 }
@@ -211,6 +215,18 @@ public class Chatbot{
             ArrayList<Integer> words_after_h1h2 = new ArrayList<Integer>();
             //TODO
 
+            for(int i = 0 ; i < corpus.size() - 2 ; i++) {
+                if(corpus.get(i) == h1 && corpus.get(i+1) == h2) {
+                    words_after_h1h2.add(corpus.get(i+2));
+                }
+            }
+
+            for(int i = 0 ; i < words_after_h1h2.size() ; i++) {
+                if(words_after_h1h2.get(i) == w) {
+                    count++;
+                }
+            } 
+    
             //output 
             System.out.println(count);
             System.out.println(words_after_h1h2.size());
@@ -224,7 +240,63 @@ public class Chatbot{
             int n2 = Integer.valueOf(args[2]);
             int h1 = Integer.valueOf(args[3]);
             int h2 = Integer.valueOf(args[4]);
+            double r = (double)n1/(double)n2;
+
+            ArrayList<Double> p_i = new ArrayList<>();
+            ArrayList<Integer> words_after_h1h2 = new ArrayList<Integer>();
             //TODO
+
+            for(int i = 0 ; i < corpus.size() - 2 ; i++) {
+                if(corpus.get(i) == h1 && corpus.get(i+1) == h2) {
+                    words_after_h1h2.add(corpus.get(i+2));
+                }
+            }
+
+            if(words_after_h1h2.size() == 0) {
+                System.out.println("undefined");
+                System.exit(0);
+            }
+
+            for(int i = 0 ; i < 4700 ; i++) {
+
+                p_i.add(getNgramProbability(corpus, words_after_h1h2, h1, i));
+
+                if(p_i.get(i) != 0) {
+                  
+                    //System.out.println(p_i.get(i));  
+                    double l_i = 0 , r_i = 0;
+
+                    if(i != 0) {
+                        for(int j = 0 ; j < i ; j++) {
+                            l_i += p_i.get(j);
+                        }
+                    }
+
+                    for(int j = 0 ; j <= i ; j++) {
+                        r_i += p_i.get(j);
+                    }
+
+                    // System.out.println("The range for index " + i + " is (" + 
+                    //     l_i + " , " + r_i);
+
+                    if(r > l_i && r <= r_i){
+                        System.out.println(i);
+                        System.out.println(String.format("%.7f",l_i));
+                        System.out.println(String.format("%.7f",r_i));
+                        System.exit(0);
+                    } else if (r == 0) {
+                        System.out.println(i);
+                        System.out.println(String.format("%.7f",(double)0));
+                        System.out.println(String.format("%.7f", r_i));
+                        System.exit(0);
+                    }
+                }
+            }
+
+
+
+            //TODO
+
         }
         else if(flag == 700){
             int seed = Integer.valueOf(args[1]);

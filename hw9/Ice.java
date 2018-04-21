@@ -31,13 +31,25 @@ public class Ice{
         return dataset.size();
     }
 
-    private static float getMean(HashMap<Integer, Integer> dataset) {
+    private static double getMean(HashMap<Integer, Integer> dataset) {
         
-        float sum = 0;
-            
+        double sum = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += dataset.get(key);
+        }
+        sum = sum/dataset.size();
+        return sum;
+    }
 
-
-        return null;
+    private static double getStdDev(HashMap<Integer, Integer> dataset) {
+        double mean = Ice.getMean(dataset);
+        double sum = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += Math.pow((dataset.get(key) - mean), 2);
+        }
+        sum = sum/(dataset.size() - 1);
+        sum = Math.sqrt(sum);
+        return sum;
     }
 
 
@@ -50,9 +62,10 @@ public class Ice{
         if(flag == 100) {
             Ice.showDataset(dataset);
         } else if (flag == 200) {
-
-            
-        }
+            System.out.println(Ice.numDataPoints(dataset));
+            System.out.println(String.format("%.2f",Ice.getMean(dataset)));
+            System.out.println(String.format("%.2f",Ice.getStdDev(dataset)));
+        } 
         
         return;
     }

@@ -54,7 +54,6 @@ public class Ice{
 
     private static double getMSE(HashMap<Integer, Integer> dataset, double b0, double b1) {
         
-        double mean = Ice.getMean(dataset);
         double sum = 0;
         for(Integer key : dataset.keySet()) {
             sum += Math.pow(b0 + b1*key - dataset.get(key),2);
@@ -62,6 +61,29 @@ public class Ice{
         sum = sum/dataset.size();
         return sum;
     }
+
+    private static double getMSEPartialDerivativeb0(HashMap<Integer, Integer> dataset, double b0, double b1){
+        
+        double sum = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += b0 + b1*key - dataset.get(key);
+        }
+
+        sum = 2*(sum/dataset.size());
+        return sum;
+    }
+
+    private static double getMSEPartialDerivativeb1(HashMap<Integer, Integer> dataset, double b0, double b1){
+        
+        double sum = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += (b0 + b1*key - dataset.get(key))*key;
+        }
+
+        sum = 2*(sum/dataset.size());
+        return sum;
+    }
+
 
 
 
@@ -80,6 +102,9 @@ public class Ice{
             System.out.println(String.format("%.2f",Ice.getStdDev(dataset)));
         } else if (flag == 300) {
             System.out.println(String.format("%.2f", Ice.getMSE(dataset, b0, b1)));
+        } else if (flag == 400) {
+            System.out.println(String.format("%.2f", Ice.getMSEPartialDerivativeb0(dataset, b0, b1)));
+            System.out.println(String.format("%.2f", Ice.getMSEPartialDerivativeb1(dataset, b0, b1)));
         }
         
         return;

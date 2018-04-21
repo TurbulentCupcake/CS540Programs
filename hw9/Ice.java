@@ -64,6 +64,19 @@ public class Ice{
         return sum;
     }
 
+    private static double getMSE_Array(double [] moddedX, 
+        HashMap<Integer, Integer> dataset, double b0, double b1) {
+        
+        double sum = 0;
+        int i = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += Math.pow(b0 + b1*moddedX[i] - dataset.get(key),2);
+            i++;
+        }
+        sum = sum/dataset.size();
+        return sum;
+    }
+
     private static double getMSEPartialDerivativeb0(HashMap<Integer, Integer> dataset, double b0, double b1){
         
         double sum = 0;
@@ -75,6 +88,7 @@ public class Ice{
         return sum;
     }
 
+
     private static double getMSEPartialDerivativeb1(HashMap<Integer, Integer> dataset, double b0, double b1){
         
         double sum = 0;
@@ -85,6 +99,8 @@ public class Ice{
         sum = 2*(sum/dataset.size());
         return sum;
     }
+    
+
 
     private static void printGradientDescent(HashMap<Integer, Integer> dataset, double n, Double t) {
 
@@ -145,6 +161,143 @@ public class Ice{
         return y;
     }
 
+    private static void inputNormalization(HashMap<Integer, Integer> dataset, double n, double t) {
+        
+        double [] moddedX = new double[dataset.size()];
+
+        double xmean = 0;
+        for(Integer key : dataset.keySet()) {
+            xmean += key;
+        }
+        xmean = xmean/dataset.size();
+        //System.out.println(xmean);
+        double stdx = 0;
+        for(Integer key : dataset.keySet()) {
+            stdx += Math.pow((key - xmean),2);
+        }
+        stdx = stdx/(dataset.size() - 1);
+        stdx = Math.sqrt(stdx);
+        //System.out.println(stdx);
+
+        Integer [] xvalues = dataset.keySet().toArray(new Integer[0]);
+        for(int i = 0 ; i < dataset.size() ; i++) {
+            moddedX[i] = (xvalues[i] - xmean)/stdx;
+            //System.out.println(moddedX[i]);
+        }
+
+        double [] moddedY = new double[dataset.size()];
+        for(int i = 0 ; i < moddedX.length ; i++) {
+            moddedY[i] = dataset.get(xvalues[i]);
+        }
+
+        // now, our new normalized x values are in moddedX and our
+        // y values from the dataset are present in moddedY, 
+        // proceeed in similar fashion to flag == 500
+
+        double b0 = 0, b1 = 0;
+ 
+        for(int i = 0 ; i < t ; i++) {
+            double oldb0 = b0;
+            double oldb1 = b1;
+            
+            // calculate the partial derivative for b0
+            double sum1 = 0;
+            for(int j = 0 ; j < moddedX.length; j++) {
+                sum1 += oldb0 + oldb1*moddedX[j] - moddedY[j];  
+            }
+            sum1 = 2*(sum1/moddedX.length);
+
+            // calculate the partial derivate for b1
+            double sum2 = 0;
+            for(int j = 0 ; j < moddedX.length; j++) {
+                sum2 += (oldb0 + oldb1*moddedX[j] - moddedY[j])*moddedX[j]; 
+            }
+            sum2 = 2*(sum2/moddedX.length);
+
+            b0 = oldb0 - n*sum1;
+            b1 = oldb1 - n*sum2;
+
+            // calculate the mean squared error
+            double mse = 0; 
+            for(int j = 0 ; j < moddedX.length ; j++) {
+                mse += Math.pow(b0 + b1*moddedX[j] - moddedY[j], 2);
+            }
+            mse = mse/moddedX.length;
+
+            System.out.println((i+1) + " " + String.format("%.2f",b0) + " " + 
+                                String.format("%.2f",b1) + " " + 
+                                String.format("%.2f",mse));
+            
+
+        }
+    
+    }
+
+    private static void SGD(HashMap<Integer, Integer> dataset, double n, double t) {
+        
+        double [] moddedX = new double[dataset.size()];
+
+        double xmean = 0;
+        for(Integer key : dataset.keySet()) {
+            xmean += key;
+        }
+        xmean = xmean/dataset.size();
+        //System.out.println(xmean);
+        double stdx = 0;
+        for(Integer key : dataset.keySet()) {
+            stdx += Math.pow((key - xmean),2);
+        }
+        stdx = stdx/(dataset.size() - 1);
+        stdx = Math.sqrt(stdx);
+        //System.out.println(stdx);
+
+        Integer [] xvalues = dataset.keySet().toArray(new Integer[0]);
+        for(int i = 0 ; i < dataset.size() ; i++) {
+            moddedX[i] = (xvalues[i] - xmean)/stdx;
+            //System.out.println(moddedX[i]);
+        }
+
+        double [] moddedY = new double[dataset.size()];
+        for(int i = 0 ; i < moddedX.length ; i++) {
+            moddedY[i] = dataset.get(xvalues[i]);
+        }
+
+        // now, our new normalized x values are in moddedX and our
+        // y values from the dataset are present in moddedY, 
+        // proceeed in similar fashion to flag == 500
+
+        double b0 = 0, b1 = 0;
+ 
+        for(int i = 0 ; i < t ; i++) {
+            double oldb0 = b0;
+            double oldb1 = b1;
+            
+                
+            // pick a random number
+            Random rand = new Random();
+            int r = rand.nextInt(moddedX.length);
+            double sum1 = 2*(oldb0 + oldb1*moddedX[r] - moddedY[r]);
+            double sum2 = 2*(oldb0 + oldb1*moddedX[r] - moddedY[r])*moddedX[r];
+
+            b0 = oldb0 - n*sum1;
+            b1 = oldb1 - n*sum2;
+
+            // calculate the mean squared error
+            double mse = 0; 
+            for(int j = 0 ; j < moddedX.length ; j++) {
+                mse += Math.pow(b0 + b1*moddedX[j] - moddedY[j], 2);
+            }
+            mse = mse/moddedX.length;
+
+            System.out.println((i+1) + " " + String.format("%.2f",b0) + " " + 
+                                String.format("%.2f",b1) + " " + 
+                                String.format("%.2f",mse));
+            
+
+        }
+    
+    }
+
 
 
 
@@ -177,6 +330,14 @@ public class Ice{
         } else if (flag == 700) {
             int year = Integer.valueOf(args[1]);
             System.out.println(String.format("%.2f",predictIceDays(dataset, year)));
+        } else if(flag == 800) {
+            double b0 = Double.valueOf(args[1]);
+            double b1 = Double.valueOf(args[2]);
+            Ice.inputNormalization(dataset,b0,b1); // here b0 = n and b1 = T
+        } else if(flag == 900) {
+            double b0 = Double.valueOf(args[1]);
+            double b1 = Double.valueOf(args[2]);
+            Ice.SGD(dataset, b0, b1); // here b0 = n and b1 = T
         }
 
         

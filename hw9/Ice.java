@@ -52,12 +52,25 @@ public class Ice{
         return sum;
     }
 
+    private static double getMSE(HashMap<Integer, Integer> dataset, double b0, double b1) {
+        
+        double mean = Ice.getMean(dataset);
+        double sum = 0;
+        for(Integer key : dataset.keySet()) {
+            sum += Math.pow(b0 + b1*key - dataset.get(key),2);
+        }
+        sum = sum/dataset.size();
+        return sum;
+    }
+
 
 
     public static void main(String[] args) {
         // read the file 
         HashMap<Integer, Integer> dataset = readFile();
         int flag = Integer.valueOf(args[0]);
+        double b0 = Double.valueOf(args[1]);
+        double b1 = Double.valueOf(args[2]);
 
         if(flag == 100) {
             Ice.showDataset(dataset);
@@ -65,7 +78,9 @@ public class Ice{
             System.out.println(Ice.numDataPoints(dataset));
             System.out.println(String.format("%.2f",Ice.getMean(dataset)));
             System.out.println(String.format("%.2f",Ice.getStdDev(dataset)));
-        } 
+        } else if (flag == 300) {
+            System.out.println(String.format("%.2f", Ice.getMSE(dataset, b0, b1)));
+        }
         
         return;
     }

@@ -92,6 +92,33 @@ public class Neural {
         return result;
     }
 
+    // the following function calculates the partial derivates with respect to the edge weights
+    private static double partialDerivativeWeights(Double [] weights, Double vc, Double y, Double inputx1, Double inputx2, int edge) {
+        
+        double result = 0;
+        if(edge == 1) {
+            result = 1*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'A');
+        } else if (edge == 2) {
+            result = inputx1*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'A');
+        } else if (edge == 3) {
+            result = inputx2*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'A');
+        } else if (edge == 4) {
+            result = 1*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'B');
+        } else if (edge == 5) {
+            result = inputx1*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'B');
+        } else if (edge == 6) {
+            result = inputx2*partialDerivativeUj(weights, vc, y, inputx1, inputx2, 'B');
+        } else if (edge == 7) {
+            result = 1*partialDerivativeUc(vc, y);
+        } else if (edge == 8) {
+            result = unitA(weights, inputx1, inputx2)[1]*partialDerivativeUc(vc, y);
+        } else if (edge == 9) {
+            result = unitB(weights, inputx1, inputx2)[1]*partialDerivativeUc(vc, y);
+        }
+        return result;
+
+    }
+
 
     public static void main(String args[]) {
         
@@ -161,6 +188,25 @@ public class Neural {
 
 
             
+        } else if (option == 400) {
+
+            for(int i = 1 ; i < 10 ; i++) {
+                weights[i-1] = Double.parseDouble(args[i]); 
+            }
+
+            x1 = Double.parseDouble(args[10]);
+            x2 = Double.parseDouble(args[11]);
+            Double y = Double.parseDouble(args[12]);
+            
+            double [] r1 = unitA(weights, x1, x2);
+            double [] r2 = unitB(weights, x1, x2);
+            double [] r3 = unitC(weights, r1[1] , r2[1]);
+
+            for(int e = 1 ; e <= 9; e++) {
+                System.out.print(String.format("%.5f ",partialDerivativeWeights(weights, r3[1], y, x1, x2, e)));
+            }
+            System.out.println();
+
         }
 
 

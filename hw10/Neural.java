@@ -1,4 +1,6 @@
 import java.util.*;
+
+
 import java.io.*;
 
 
@@ -119,6 +121,29 @@ public class Neural {
 
     }
 
+    // returns a new array containing new weights after implementing stochasitic gradient descent for one iteration
+    private static Double [] calculateSGD(Double [] weights, Double vc, Double y, Double inputx1, Double inputx2, Double mu) {
+        Double [] new_weights = new Double[weights.length];
+        for(int i = 0 ; i < weights.length ; i++) {
+            new_weights[i] = weights[i] - mu*partialDerivativeWeights(weights, vc, y, inputx1, inputx2, i+1);
+        }
+        return new_weights;
+    }
+
+    private static Double SetEvaluationError(Double [] new_weights, ArrayList<Double> eval_x1, ArrayList<Double> eval_x2, ArrayList<Double> eval_y) {
+
+        Double sum = 0.0;
+        for(int i = 0 ; i < eval_x1.size() ; i++) {
+            double [] r1 = unitA(new_weights, eval_x1.get(i), eval_x2.get(i));
+            double [] r2 = unitB(new_weights, eval_x1.get(i), eval_x2.get(i));
+            double [] r3 = unitC(new_weights, r1[1] , r2[1]);
+            sum += 0.5*Math.pow(r3[1] - eval_y.get(i),2);
+        }  
+        return sum;
+        
+    }
+
+
 
     public static void main(String args[]) {
         
@@ -207,12 +232,257 @@ public class Neural {
             }
             System.out.println();
 
-        }
+        } else if (option == 500) {
+
+            for(int i = 1 ; i < 10 ; i++) {
+                weights[i-1] = Double.parseDouble(args[i]); 
+            }
+
+            x1 = Double.parseDouble(args[10]);
+            x2 = Double.parseDouble(args[11]);
+            Double y = Double.parseDouble(args[12]);
+            Double mu = Double.parseDouble(args[13]);
+
+            double [] r1 = unitA(weights, x1, x2);
+            double [] r2 = unitB(weights, x1, x2);
+            double [] r3 = unitC(weights, r1[1] , r2[1]);
+
+            // print old weights
+            for(Double w : weights) {
+                System.out.print(String.format("%.5f ", w));
+            }
+            System.out.println();
+            System.out.println(String.format("%.5f", calculateErrorVc(r3[1], y)));
+
+            // perform SGD
+            Double [] new_weights = calculateSGD(weights, r3[1], y, x1, x2, mu);
+
+            // print new weights
+            for(Double w : new_weights) {
+                System.out.print(String.format("%.5f ", w));
+            }
+
+            r1 = unitA(new_weights, x1, x2);
+            r2 = unitB(new_weights, x1, x2);
+            r3 = unitC(new_weights, r1[1] , r2[1]);
+
+            System.out.println();
+            System.out.println(String.format("%.5f", calculateErrorVc(r3[1], y)));
+
+
+        } else if (option == 600 || option == 700 || option == 800) {
+
+            for(int i = 1 ; i < 10 ; i++) {
+                weights[i-1] = Double.parseDouble(args[i]); 
+            }
+
+            Double mu = Double.parseDouble(args[10]);
+
+            // initialize three arrays to hold the input and output variables
+            ArrayList<Double>  x1 = new ArrayList<>();
+            ArrayList<Double>  x2 = new ArrayList<>();
+            ArrayList<Double>  y = new ArrayList<>();
+
+            ArrayList<Double> eval_x1 = new ArrayList<>();
+            ArrayList<Double> eval_x2 = new ArrayList<>();
+            ArrayList<Double> eval_y = new ArrayList<>();
+
+
+            // read the train file and store contents from training set
+            try {
+                File f = new File("./hw2_midterm_A_train.txt");
+                Scanner sc = new Scanner(f);
+                while(sc.hasNext()) {
+                    x1.add(sc.nextDouble());
+                    x2.add(sc.nextDouble());
+                    y.add(sc.nextDouble());
+                }
+                sc.close();
+            } catch (Exception  ex) {
+                ex.printStackTrace();
+            }        
+
+            // read the evaluation file 
+            try {
+                File f = new File("./hw2_midterm_A_eval.txt");
+                Scanner sc = new Scanner(f);
+                while(sc.hasNext()) {
+                    eval_x1.add(sc.nextDouble());
+                    eval_x2.add(sc.nextDouble());
+                    eval_y.add(sc.nextDouble());
+                }
+                sc.close();
+            } catch (Exception  ex) {
+                ex.printStackTrace();
+            }
 
 
 
+            if(option == 600) {
+
+                Double [] new_weights = new Double[weights.length];
+                System.arraycopy(weights, 0, new_weights, 0, weights.length);
+                
+                double [] r1, r2, r3;
+
+                for(int i = 0 ; i < x1.size(); i++) {
+
+                    System.out.println(String.format("%.5f ", x1.get(i)) + 
+                                    String.format("%.5f ", x2.get(i)) + 
+                                    String.format("%.5f ", y.get(i)));
+                                    
+                    // recalculate Vc
+                    r1 = unitA(new_weights, x1.get(i), x2.get(i));
+                    r2 = unitB(new_weights, x1.get(i), x2.get(i));
+                    r3 = unitC(new_weights, r1[1] , r2[1]);
+                
+                    // calculate new weights
+                    new_weights = calculateSGD(new_weights, r3[1], y.get(i),
+                                x1.get(i) , x2.get(i), mu);
+
+                    // display new weights
+                    for(Double w : new_weights) {
+                        System.out.print(String.format("%.5f ", w));
+                    }
+                    System.out.println();
+                    // compute using evaluation
+                    System.out.println(String.format("%.5f",SetEvaluationError(new_weights, eval_x1, eval_x2, eval_y)));
+                }
+
+            } else if (option == 700) {
+
+                int epochs = Integer.parseInt(args[11]);
+
+                Double [] new_weights = new Double[weights.length];
+                System.arraycopy(weights, 0, new_weights, 0, weights.length);
+                
+                double [] r1, r2, r3;
+
+                for(int epoch = 0 ; epoch < epochs ; epoch++) {
+
+                    for(int i = 0 ; i < x1.size(); i++) {
+                                       
+                        // recalculate Vc
+                        r1 = unitA(new_weights, x1.get(i), x2.get(i));
+                        r2 = unitB(new_weights, x1.get(i), x2.get(i));
+                        r3 = unitC(new_weights, r1[1] , r2[1]);
+                    
+                        // calculate new weights
+                        new_weights = calculateSGD(new_weights, r3[1], y.get(i),
+                                    x1.get(i) , x2.get(i), mu);
+    
+                        // compute using evaluation
+                    }
+
+                    //print weights after epoch
+                    for(Double w : new_weights) {
+                        System.out.print(String.format("%.5f ",w));
+                    }
+                    System.out.println();
+
+                    // print evaluation error
+                    System.out.println(String.format("%.5f",SetEvaluationError(new_weights, eval_x1, eval_x2, eval_y)));
+
+                    
+                }
 
 
+
+            } else if(option == 800) {
+
+                int epochs = Integer.parseInt(args[11]);
+
+                Double [] new_weights = new Double[weights.length];
+                System.arraycopy(weights, 0, new_weights, 0, weights.length);
+                
+                double [] r1, r2, r3;
+
+                double delta = 9999; // set delta to some aribitarly large number
+                int epoch;
+                for(epoch = 0 ; epoch < epochs ; epoch++) {
+
+                    for(int i = 0 ; i < x1.size(); i++) {
+                                       
+                        // recalculate Vc
+                        r1 = unitA(new_weights, x1.get(i), x2.get(i));
+                        r2 = unitB(new_weights, x1.get(i), x2.get(i));
+                        r3 = unitC(new_weights, r1[1] , r2[1]);
+                    
+                        // calculate new weights
+                        new_weights = calculateSGD(new_weights, r3[1], y.get(i),
+                                    x1.get(i) , x2.get(i), mu);
+    
+                        // compute using evaluation
+                    }
+
+                    
+
+                    if(SetEvaluationError(new_weights, eval_x1, eval_x2, eval_y) > delta){
+                        break;
+                    } else {
+                        delta = SetEvaluationError(new_weights, eval_x1, eval_x2, eval_y);
+                    }
+
+                }
+
+                // print number of epochs that happened
+                System.out.println(epoch+1);
+
+                // print the final w
+                for(Double w : new_weights) {
+                    System.out.print(String.format("%.5f ", w));
+                }
+                System.out.println();
+
+                // print set evaluation error at the end
+                System.out.println(String.format("%.5f", SetEvaluationError(new_weights, eval_x1, eval_x2, eval_y)));
+
+                // PERFORMANCE ON TEST
+                // THIS IS WHERE THE ACTUAL CLASSIFICATION OF TEST SET HAPPENS
+
+                ArrayList<Double> test_x1 = new ArrayList<>();
+                ArrayList<Double> test_x2 = new ArrayList<>();
+                ArrayList<Integer> test_y = new ArrayList<>();
+
+                try {
+                    File f = new File("./hw2_midterm_A_test.txt");
+                    Scanner sc = new Scanner(f);
+                    while(sc.hasNext()) {
+                        test_x1.add(sc.nextDouble());
+                        test_x2.add(sc.nextDouble());
+                        test_y.add(sc.nextInt());
+                    }
+                    sc.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                ArrayList<Integer> predictions = new ArrayList<>();
+
+                for(int i = 0 ; i < test_x1.size() ; i++) {
+                    r1 = unitA(new_weights, test_x1.get(i), test_x2.get(i));
+                    r2 = unitB(new_weights, test_x1.get(i), test_x2.get(i));
+                    r3 = unitC(new_weights, r1[1] , r2[1]);
+                    if(r3[1] >= 0.5) {
+                        predictions.add(1);
+                    } else {
+                        predictions.add(0);
+                    }
+                }
+
+                double accuracy = 0;
+                for(int i = 0 ; i < test_y.size() ; i++) {
+                    if(predictions.get(i) == test_y.get(i)) {
+                        accuracy++;
+                    }
+                }
+
+                accuracy = accuracy/test_x1.size();
+                System.out.println(String.format("%.5f ",accuracy));
+
+            }
+            
+        } 
 
 
     }
